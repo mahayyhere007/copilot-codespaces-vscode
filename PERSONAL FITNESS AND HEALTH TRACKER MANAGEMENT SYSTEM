@@ -1,0 +1,235 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Structure to represent a proposal
+struct Proposal {
+    int id;
+    string proposerName;
+    string planName;
+    string description;
+    string status; // Pending, Approved, Rejected
+};
+
+// Structure to represent daily fitness logs
+struct FitnessLog {
+    string date;
+    int caloriesBurned;
+    int stepsTaken;
+    float hoursSlept;
+    int waterIntake; // in milliliters
+};
+
+// Global variables
+vector<Proposal> proposals;
+vector<FitnessLog> fitnessLogs;
+int nextProposalId = 1;
+
+// Function to submit a proposal
+void submitProposal() {
+    Proposal proposal;
+    proposal.id = nextProposalId++;
+    cout << "Enter your name: ";
+    cin.ignore();
+    getline(cin, proposal.proposerName);
+    cout << "Enter fitness plan name: ";
+    getline(cin, proposal.planName);
+    cout << "Enter description of the plan: ";
+    getline(cin, proposal.description);
+    proposal.status = "Pending";
+
+    proposals.push_back(proposal);
+    cout << "Proposal submitted successfully! Your proposal ID is: " << proposal.id << "\n";
+}
+
+// Function to view all proposals
+void viewProposals() {
+    if (proposals.empty()) {
+        cout << "No proposals available.\n";
+        return;
+    }
+
+    cout << "\n--- List of Proposals ---\n";
+    for (const auto& proposal : proposals) {
+        cout << "ID: " << proposal.id << "\n"
+             << "Proposer: " << proposal.proposerName << "\n"
+             << "Plan Name: " << proposal.planName << "\n"
+             << "Description: " << proposal.description << "\n"
+             << "Status: " << proposal.status << "\n"
+             << "-------------------------\n";
+    }
+}
+
+// Function to approve or reject a proposal
+void updateProposalStatus() {
+    if (proposals.empty()) {
+        cout << "No proposals available to update.\n";
+        return;
+    }
+
+    int id;
+    cout << "Enter proposal ID to update: ";
+    cin >> id;
+
+    for (auto& proposal : proposals) {
+        if (proposal.id == id) {
+            cout << "Proposal found:\n";
+            cout << "Plan Name: " << proposal.planName << "\n";
+            cout << "Description: " << proposal.description << "\n";
+            cout << "Current Status: " << proposal.status << "\n";
+
+            string newStatus;
+            cout << "Enter new status (Approved/Rejected): ";
+            cin >> ws; // Clear input buffer
+            getline(cin, newStatus);
+
+            if (newStatus == "Approved" || newStatus == "Rejected") {
+                proposal.status = newStatus;
+                cout << "Proposal status updated successfully to: " << newStatus << "\n";
+            } else {
+                cout << "Invalid status. Status remains unchanged.\n";
+            }
+            return;
+        }
+    }
+    cout << "Proposal with ID " << id << " not found.\n";
+}
+
+// Function to delete a proposal
+void deleteProposal() {
+    if (proposals.empty()) {
+        cout << "No proposals available to delete.\n";
+        return;
+    }
+
+    int id;
+    cout << "Enter proposal ID to delete: ";
+    cin >> id;
+
+    for (auto it = proposals.begin(); it != proposals.end(); ++it) {
+        if (it->id == id) {
+            proposals.erase(it);
+            cout << "Proposal with ID " << id << " deleted successfully.\n";
+            return;
+        }
+    }
+
+    cout << "Proposal with ID " << id << " not found.\n";
+}
+
+// Function to log daily fitness data
+void logFitnessData() {
+    FitnessLog log;
+    cout << "Enter date (YYYY-MM-DD): ";
+    cin >> log.date;
+    cout << "Enter calories burned: ";
+    cin >> log.caloriesBurned;
+    cout << "Enter steps taken: ";
+    cin >> log.stepsTaken;
+    cout << "Enter hours slept: ";
+    cin >> log.hoursSlept;
+    cout << "Enter water intake (in milliliters): ";
+    cin >> log.waterIntake;
+
+    fitnessLogs.push_back(log);
+    cout << "Fitness data logged successfully for " << log.date << ".\n";
+}
+
+// Function to view fitness logs
+void viewFitnessLogs() {
+    if (fitnessLogs.empty()) {
+        cout << "No fitness logs available.\n";
+        return;
+    }
+
+    cout << "\n--- Fitness Logs ---\n";
+    for (const auto& log : fitnessLogs) {
+        cout << "Date: " << log.date << "\n";
+        cout << "Calories Burned: " << log.caloriesBurned << " cal\n";
+        cout << "Steps Taken: " << log.stepsTaken << "\n";
+        cout << "Hours Slept: " << log.hoursSlept << " hrs\n";
+        cout << "Water Intake: " << log.waterIntake << " ml\n";
+        cout << "---------------------\n";
+    }
+}
+
+// Function to generate a summary report
+void generateSummaryReport() {
+    if (fitnessLogs.empty()) {
+        cout << "No fitness logs available to generate a report.\n";
+        return;
+    }
+
+    int totalCalories = 0, totalSteps = 0, totalWater = 0;
+    float totalSleep = 0.0;
+
+    for (const auto& log : fitnessLogs) {
+        totalCalories += log.caloriesBurned;
+        totalSteps += log.stepsTaken;
+        totalWater += log.waterIntake;
+        totalSleep += log.hoursSlept;
+    }
+
+    cout << "\n--- Summary Report ---\n";
+    cout << "Total Calories Burned: " << totalCalories << " cal\n";
+    cout << "Total Steps Taken: " << totalSteps << "\n";
+    cout << "Total Water Intake: " << totalWater << " ml\n";
+    cout << "Total Hours Slept: " << totalSleep << " hrs\n";
+    cout << "-----------------------\n";
+}
+
+// Main menu
+void menu() {
+    while (true) {
+        cout << "\n--- Personal Fitness and Health Tracker Management System ---\n";
+        cout << "1. Submit a Proposal\n";
+        cout << "2. View Proposals\n";
+        cout << "3. Update Proposal Status\n";
+        cout << "4. Delete a Proposal\n";
+        cout << "5. Log Fitness Data\n";
+        cout << "6. View Fitness Logs\n";
+        cout << "7. Generate Summary Report\n";
+        cout << "8. Exit\n";
+        cout << "Enter your choice (1-8): ";
+
+        int choice;
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                submitProposal();
+                break;
+            case 2:
+                viewProposals();
+                break;
+            case 3:
+                updateProposalStatus();
+                break;
+            case 4:
+                deleteProposal();
+                break;
+            case 5:
+                logFitnessData();
+                break;
+            case 6:
+                viewFitnessLogs();
+                break;
+            case 7:
+                generateSummaryReport();
+                break;
+            case 8:
+                cout << "Exiting the system. Goodbye!\n";
+                return;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    }
+}
+
+// Main function
+int main() {
+    menu();
+    return 0;
+}
+
